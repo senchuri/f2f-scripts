@@ -62,8 +62,9 @@ async function loadData(){
   const r = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=vendors");
   vData = await r.json();
 
-  pcList = [...new Set(vData.map(x => x.PostalCode).filter(Boolean))];
-  locList = [...new Set(vData.map(x => x.Location).filter(Boolean))];
+  // Filter out empty, then unique postal codes (strings)
+  pcList = [...new Set(vData.map(x => x.PostalCode).filter(p => p && p.trim() !== ""))];
+  locList = [...new Set(vData.map(x => x.Location).filter(l => l && l.trim() !== ""))];
 }
 
 function setupAutocomplete(inputId, listId, dataList){
@@ -76,8 +77,11 @@ function setupAutocomplete(inputId, listId, dataList){
       list.innerHTML = "";
       return;
     }
+    // Suggest items starting with entered text (case-insensitive)
     const filtered = dataList.filter(item => item.toLowerCase().startsWith(val));
-    list.innerHTML = filtered.map(item => `<div class="auto-item" style="padding:5px;cursor:pointer;border-bottom:1px solid #ccc;">${item}</div>`).join("");
+    list.innerHTML = filtered.map(item => 
+      `<div class="auto-item" style="padding:5px;cursor:pointer;border-bottom:1px solid #ccc;">${item}</div>`
+    ).join("");
   });
 
   list.addEventListener("click", e => {
@@ -88,7 +92,6 @@ function setupAutocomplete(inputId, listId, dataList){
     }
   });
 
-  // Hide autocomplete on clicking outside
   document.addEventListener("click", e => {
     if(!inp.contains(e.target) && !list.contains(e.target)){
       list.innerHTML = "";
@@ -97,8 +100,8 @@ function setupAutocomplete(inputId, listId, dataList){
 }
 
 function loadVendors(){
-  const pc = document.getElementById("postalCode").value.trim();
-  const loc = document.getElementById("location").value.trim();
+  const pc = document.getElementById("postalCode").value.trim().toLowerCase();
+  const loc = document.getElementById("location").value.trim().toLowerCase();
   const list = document.getElementById("vendorList");
 
   if(!pc && !loc){
@@ -109,9 +112,9 @@ function loadVendors(){
   list.innerHTML = "Loading...";
 
   const filtered = vData.filter(v => {
-    const matchPC = pc ? v.PostalCode.toLowerCase() === pc.toLowerCase() : false;
-    const matchLoc = loc ? v.Location.toLowerCase() === loc.toLowerCase() : false;
-    return matchPC || matchLoc;
+    const pcMatch = pc ? v.PostalCode.toLowerCase().includes(pc) : false;
+    const locMatch = loc ? v.Location.toLowerCase().includes(loc) : false;
+    return pcMatch || locMatch;
   });
 
   if(filtered.length === 0){
@@ -124,7 +127,7 @@ function loadVendors(){
       <h3>${v.VendorName}</h3>
       <p><strong>Location:</strong> ${v.Location}</p>
       <p><strong>Postal Code:</strong> ${v.PostalCode}</p>
-      <a href="${v.Website}" target="_blank">Website</a>
+      <a href="${v.Website}" target="_blank" rel="noopener">Website</a>
     </div>`).join("");
 }
 
@@ -135,7 +138,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("searchBtn").addEventListener("click", loadVendors);
 });
-
 
 
 // -------------------------------------------------- 
