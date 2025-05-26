@@ -291,9 +291,8 @@ let pData = [], pcProd = [];
 async function loadProductData() {
   const r = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=products");
   pData = await r.json();
-  // If you want to filter postal codes to numbers only, uncomment next line:
-  // pcProd = [...new Set(pData.map(x => x.PostalCode).filter(pc => /^\d+$/.test(pc)))];
-  pcProd = [...new Set(pData.map(x => x.PostalCode))];
+  // Convert postal codes to strings to avoid errors
+  pcProd = [...new Set(pData.map(x => String(x.PostalCode)))];
 }
 
 function setupProductAutocomplete() {
@@ -304,7 +303,7 @@ function setupProductAutocomplete() {
     const val = inp.value.trim().toLowerCase();
     if (!val) {
       list.innerHTML = "";
-      list.style.display = "none";  // Hide dropdown when input is empty
+      list.style.display = "none"; // Hide dropdown if input empty
       return;
     }
 
@@ -313,7 +312,7 @@ function setupProductAutocomplete() {
       list.innerHTML = filtered
         .map(p => `<div class="auto-prod" style="padding: 8px; cursor: pointer;">${p}</div>`)
         .join("");
-      list.style.display = "block"; // Show dropdown when matches found
+      list.style.display = "block";
     } else {
       list.innerHTML = `<div style="padding: 8px; color: #999;">No matches found</div>`;
       list.style.display = "block";
@@ -324,7 +323,7 @@ function setupProductAutocomplete() {
     if (e.target.classList.contains("auto-prod")) {
       inp.value = e.target.textContent;
       list.innerHTML = "";
-      list.style.display = "none"; // Hide dropdown on selection
+      list.style.display = "none"; // Hide dropdown after selection
       loadProducts();
     }
   });
@@ -341,7 +340,7 @@ function loadProducts() {
   const pc = document.getElementById("productPostal").value.trim();
   const list = document.getElementById("productList");
   list.innerHTML = "Loading...";
-  const f = pc ? pData.filter(x => x.PostalCode === pc) : pData;
+  const f = pc ? pData.filter(x => String(x.PostalCode) === pc) : pData;
   list.innerHTML = f.map(p => `
     <div style="border:1px solid #ccc; padding:10px; margin:10px 0; border-radius: 6px;">
       <h3>${p.ProductName}</h3>
@@ -357,6 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadProductData();
   setupProductAutocomplete();
 });
+
 
 
 
