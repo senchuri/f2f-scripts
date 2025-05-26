@@ -98,13 +98,16 @@ async function loadProductData(){
   locList = [...new Set(pData.map(x => x.Location).filter(Boolean))];
   catList = [...new Set(pData.map(x => x.Category).filter(Boolean))];
 
-  populateFilters();
   setupProductAutocomplete();
 }
 
 function populateFilters(){
   const locSel = document.getElementById("locationFilter");
   const catSel = document.getElementById("categoryFilter");
+
+  // Clear previous options except default
+  locSel.length = 1;
+  catSel.length = 1;
 
   locList.forEach(loc => {
     const opt = document.createElement("option");
@@ -135,22 +138,36 @@ function setupProductAutocomplete(){
     if(e.target.classList.contains("auto-prod")){
       inp.value = e.target.textContent;
       list.innerHTML = "";
-      loadProducts();
     }
   });
 }
 
 function loadProducts(){
   const pc = document.getElementById("productPostal").value.trim();
-  const loc = document.getElementById("locationFilter").value;
-  const cat = document.getElementById("categoryFilter").value;
+  if(!pc){
+    alert("Please enter a postal code.");
+    return;
+  }
+  const locSel = document.getElementById("locationFilter");
+  const catSel = document.getElementById("categoryFilter");
+  const loc = locSel.value;
+  const cat = catSel.value;
   const list = document.getElementById("productList");
+
+  // Show filters only after first search
+  const filtersDiv = document.getElementById("filters");
+  if(filtersDiv.style.display === "none"){
+    populateFilters();
+    filtersDiv.style.display = "block";
+
+    // Add change listeners to filters to update results on change
+    locSel.onchange = loadProducts;
+    catSel.onchange = loadProducts;
+  }
 
   list.innerHTML = "Loading...";
 
-  let filtered = pData;
-
-  if(pc) filtered = filtered.filter(x => x.PostalCode === pc);
+  let filtered = pData.filter(x => x.PostalCode === pc);
   if(loc) filtered = filtered.filter(x => x.Location === loc);
   if(cat) filtered = filtered.filter(x => x.Category === cat);
 
@@ -172,5 +189,6 @@ function loadProducts(){
 }
 
 document.addEventListener("DOMContentLoaded", loadProductData);
+document.getElementById("searchBtn").addEventListener("click", loadProducts);
 
 
