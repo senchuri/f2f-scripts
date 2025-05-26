@@ -56,20 +56,18 @@
 
 
 
-let vData = [], pcList = [], locList = [];
+let vData = [], pcList = [];
 
 async function loadData(){
   const r = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=vendors");
   vData = await r.json();
 
-  // Filter out empty, then unique postal codes (strings)
   pcList = [...new Set(vData.map(x => x.PostalCode).filter(p => p && p.trim() !== ""))];
-  locList = [...new Set(vData.map(x => x.Location).filter(l => l && l.trim() !== ""))];
 }
 
-function setupAutocomplete(inputId, listId, dataList){
-  const inp = document.getElementById(inputId);
-  const list = document.getElementById(listId);
+function setupAutocomplete(){
+  const inp = document.getElementById("postalCode");
+  const list = document.getElementById("autocompletePostal");
 
   inp.addEventListener("input", () => {
     const val = inp.value.trim().toLowerCase();
@@ -77,8 +75,7 @@ function setupAutocomplete(inputId, listId, dataList){
       list.innerHTML = "";
       return;
     }
-    // Suggest items starting with entered text (case-insensitive)
-    const filtered = dataList.filter(item => item.toLowerCase().startsWith(val));
+    const filtered = pcList.filter(item => item.toLowerCase().startsWith(val));
     list.innerHTML = filtered.map(item => 
       `<div class="auto-item" style="padding:5px;cursor:pointer;border-bottom:1px solid #ccc;">${item}</div>`
     ).join("");
@@ -98,6 +95,39 @@ function setupAutocomplete(inputId, listId, dataList){
     }
   });
 }
+
+function loadVendors(){
+  const pc = document.getElementById("postalCode").value.trim().toLowerCase();
+  const list = document.getElementById("vendorList");
+
+  if(!pc){
+    list.innerHTML = "Please enter a Postal Code to search.";
+    return;
+  }
+
+  list.innerHTML = "Loading...";
+
+  const filtered = vData.filter(v => v.PostalCode.toLowerCase().includes(pc));
+
+  if(filtered.length === 0){
+    list.innerHTML = "No vendors found.";
+    return;
+  }
+
+  list.innerHTML = filtered.map(v => `
+    <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+      <h3>${v.VendorName}</h3>
+      <p><strong>Location:</strong> ${v.Location}</p>
+      <p><strong>Postal Code:</strong> ${v.PostalCode}</p>
+      <a href="${v.Website}" target="_blank" rel="noopener">Website</a>
+    </div>`).join("");
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadData();
+  setupAutocomplete();
+  document.getElementById("searchBtn").addEventListener("click", loadVendors);
+});
 
 function loadVendors(){
   const pc = document.getElementById("postalCode").value.trim().toLowerCase();
