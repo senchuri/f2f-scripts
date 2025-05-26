@@ -418,7 +418,6 @@ function loadProducts(){
     filtered.map(p => `
       <div style="border:1px solid#ccc;padding:10px;margin:10px 0">
       <img src=${p.ImageURL} style={width:100%; height:250px; object-fit:cover} />
-      <h3>${p.ImageURL}</h3>
         <h3>${p.ProductName}</h3>
         <p>${p.Category}</p>
         <p>Vendor: ${p.Vendor}</p>
