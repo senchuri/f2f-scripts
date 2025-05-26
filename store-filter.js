@@ -426,23 +426,21 @@ function loadProducts(){
   //     </div>
   //   `).join("") : "No products found.";
 
-
  list.innerHTML = filtered.length ? `
-  <div class="row">
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
     ${filtered.map(p => `
-      <div class="col-md-4 mb-4">
-        <div class="p-3 border">
-          <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 250px; object-fit: cover;" />
-          <h3>${p.ProductName}</h3>
-          <p>${p.Category}</p>
-          <p>Vendor: ${p.Vendor}</p>
-          <p>Postal Code: ${p.PostalCode}</p>
-          <a href="${p.Website}" target="_blank">Website</a>
-        </div>
+      <div style="border: 1px solid #ccc; padding: 10px;">
+        <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 250px; object-fit: cover;" />
+        <h3>${p.ProductName}</h3>
+        <p>${p.Category}</p>
+        <p>Vendor: ${p.Vendor}</p>
+        <p>Postal Code: ${p.PostalCode}</p>
+        <a href="${p.Website}" target="_blank">Website</a>
       </div>
     `).join("")}
   </div>
 ` : "No products found.";
+
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
