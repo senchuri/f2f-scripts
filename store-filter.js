@@ -88,33 +88,51 @@ document.addEventListener("DOMContentLoaded",async()=>{
 //   setupProductAutocomplete();
 // });
 
-let pData=[], pcProd=[], locList=[], catList=[];
+let pData = [], pcProd = [], locList = [], catList = [];
 
 async function loadProductData(){
   const r = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=products");
   pData = await r.json();
-  pcProd = [...new Set(pData.map(x => x.PostalCode))];
-  locList = [...new Set(pData.map(x => x.Location))];
-  catList = [...new Set(pData.map(x => x.Category))];
+
+  pcProd = [...new Set(pData.map(x => x.PostalCode).filter(Boolean))];
+  locList = [...new Set(pData.map(x => x.Location).filter(Boolean))];
+  catList = [...new Set(pData.map(x => x.Category).filter(Boolean))];
+
   populateFilters();
+  setupProductAutocomplete();
 }
 
 function populateFilters(){
   const locSel = document.getElementById("locationFilter");
   const catSel = document.getElementById("categoryFilter");
-  locList.forEach(loc => locSel.innerHTML += `<option value="${loc}">${loc}</option>`);
-  catList.forEach(cat => catSel.innerHTML += `<option value="${cat}">${cat}</option>`);
+
+  locList.forEach(loc => {
+    const opt = document.createElement("option");
+    opt.value = opt.textContent = loc;
+    locSel.appendChild(opt);
+  });
+
+  catList.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = opt.textContent = cat;
+    catSel.appendChild(opt);
+  });
 }
 
 function setupProductAutocomplete(){
-  const inp = document.getElementById("productPostal"),
-        list = document.getElementById("productAutocomplete");
+  const inp = document.getElementById("productPostal");
+  const list = document.getElementById("productAutocomplete");
+
   inp.addEventListener("input", () => {
     const val = inp.value.trim().toLowerCase();
-    list.innerHTML = val ? pcProd.filter(p => p.toLowerCase().startsWith(val)).map(p => `<div class="auto-prod">${p}</div>`).join("") : "";
+    list.innerHTML = val
+      ? pcProd.filter(p => p.toLowerCase().startsWith(val))
+          .map(p => `<div class="auto-prod" style="padding:5px;cursor:pointer;border-bottom:1px solid #ccc;">${p}</div>`).join("")
+      : "";
   });
+
   list.addEventListener("click", e => {
-    if (e.target.classList.contains("auto-prod")) {
+    if(e.target.classList.contains("auto-prod")){
       inp.value = e.target.textContent;
       list.innerHTML = "";
       loadProducts();
@@ -127,26 +145,32 @@ function loadProducts(){
   const loc = document.getElementById("locationFilter").value;
   const cat = document.getElementById("categoryFilter").value;
   const list = document.getElementById("productList");
+
   list.innerHTML = "Loading...";
-  const filtered = pData.filter(p =>
-    (!pc || p.PostalCode === pc) &&
-    (!loc || p.Location === loc) &&
-    (!cat || p.Category === cat)
-  );
-  list.innerHTML = filtered.map(p =>
-    `<div style="border:1px solid#ccc;padding:10px;margin:10px 0">
+
+  let filtered = pData;
+
+  if(pc) filtered = filtered.filter(x => x.PostalCode === pc);
+  if(loc) filtered = filtered.filter(x => x.Location === loc);
+  if(cat) filtered = filtered.filter(x => x.Category === cat);
+
+  if(filtered.length === 0){
+    list.innerHTML = "No products found.";
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => 
+    `<div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
       <h3>${p.ProductName}</h3>
-      <p>${p.Category}</p>
-      <p>Vendor: ${p.Vendor}</p>
-      <p>Location: ${p.Location}</p>
-      <p>Postal Code: ${p.PostalCode}</p>
+      <p><strong>Category:</strong> ${p.Category}</p>
+      <p><strong>Vendor:</strong> ${p.Vendor}</p>
+      <p><strong>Location:</strong> ${p.Location}</p>
+      <p><strong>Postal Code:</strong> ${p.PostalCode}</p>
       <a href="${p.Website}" target="_blank">Website</a>
-    </div>`).join("") || "No products found.";
+    </div>`
+  ).join("");
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadProductData();
-  setupProductAutocomplete();
-});
+document.addEventListener("DOMContentLoaded", loadProductData);
 
 
