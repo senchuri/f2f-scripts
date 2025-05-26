@@ -254,33 +254,106 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // for products
 
-let pData=[],pcProd=[];
-async function loadProductData(){
-  const r=await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=products");
-  pData=await r.json();
-  pcProd=[...new Set(pData.map(x=>x.PostalCode))];
+// let pData=[],pcProd=[];
+// async function loadProductData(){
+//   const r=await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=products");
+//   pData=await r.json();
+//   pcProd=[...new Set(pData.map(x=>x.PostalCode))];
+// }
+// function setupProductAutocomplete(){
+//   const inp=document.getElementById("productPostal"),list=document.getElementById("productAutocomplete");
+//   inp.addEventListener("input",()=>{
+//     const val=inp.value.trim().toLowerCase();
+//     list.innerHTML=val?pcProd.filter(p=>p.toLowerCase().startsWith(val)).map(p=>`<div class="auto-prod">${p}</div>`).join(""):"";
+//   });
+//   list.addEventListener("click",e=>{
+//     if(e.target.classList.contains("auto-prod")){
+//       inp.value=e.target.textContent;
+//       list.innerHTML="";
+//       loadProducts();
+//     }
+//   });
+// }
+// function loadProducts(){
+//   const pc=document.getElementById("productPostal").value.trim(),list=document.getElementById("productList");
+//   list.innerHTML="Loading...";
+//   const f=pc?pData.filter(x=>x.PostalCode==pc):pData;
+//   list.innerHTML=f.map(p=>`<div style="border:1px solid#ccc;padding:10px;margin:10px 0"><h3>${p.ProductName}</h3><p>${p.Category}</p><p>Vendor: ${p.Vendor}</p><p>Postal Code: ${p.PostalCode}</p><a href="${p.Website}" target="_blank">Website</a></div>`).join("")||"No products found.";
+// }
+// document.addEventListener("DOMContentLoaded",async()=>{
+//   await loadProductData();
+//   setupProductAutocomplete();
+// });
+
+
+let pData = [], pcProd = [];
+
+async function loadProductData() {
+  const r = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=products");
+  pData = await r.json();
+  // If you want to filter postal codes to numbers only, uncomment next line:
+  // pcProd = [...new Set(pData.map(x => x.PostalCode).filter(pc => /^\d+$/.test(pc)))];
+  pcProd = [...new Set(pData.map(x => x.PostalCode))];
 }
-function setupProductAutocomplete(){
-  const inp=document.getElementById("productPostal"),list=document.getElementById("productAutocomplete");
-  inp.addEventListener("input",()=>{
-    const val=inp.value.trim().toLowerCase();
-    list.innerHTML=val?pcProd.filter(p=>p.toLowerCase().startsWith(val)).map(p=>`<div class="auto-prod">${p}</div>`).join(""):"";
+
+function setupProductAutocomplete() {
+  const inp = document.getElementById("productPostal");
+  const list = document.getElementById("productAutocomplete");
+
+  inp.addEventListener("input", () => {
+    const val = inp.value.trim().toLowerCase();
+    if (!val) {
+      list.innerHTML = "";
+      list.style.display = "none";  // Hide dropdown when input is empty
+      return;
+    }
+
+    const filtered = pcProd.filter(p => p.toLowerCase().startsWith(val));
+    if (filtered.length > 0) {
+      list.innerHTML = filtered
+        .map(p => `<div class="auto-prod" style="padding: 8px; cursor: pointer;">${p}</div>`)
+        .join("");
+      list.style.display = "block"; // Show dropdown when matches found
+    } else {
+      list.innerHTML = `<div style="padding: 8px; color: #999;">No matches found</div>`;
+      list.style.display = "block";
+    }
   });
-  list.addEventListener("click",e=>{
-    if(e.target.classList.contains("auto-prod")){
-      inp.value=e.target.textContent;
-      list.innerHTML="";
+
+  list.addEventListener("click", e => {
+    if (e.target.classList.contains("auto-prod")) {
+      inp.value = e.target.textContent;
+      list.innerHTML = "";
+      list.style.display = "none"; // Hide dropdown on selection
       loadProducts();
     }
   });
+
+  // Hide dropdown if clicking outside input or list
+  document.addEventListener("click", (e) => {
+    if (e.target !== inp && !list.contains(e.target)) {
+      list.style.display = "none";
+    }
+  });
 }
-function loadProducts(){
-  const pc=document.getElementById("productPostal").value.trim(),list=document.getElementById("productList");
-  list.innerHTML="Loading...";
-  const f=pc?pData.filter(x=>x.PostalCode==pc):pData;
-  list.innerHTML=f.map(p=>`<div style="border:1px solid#ccc;padding:10px;margin:10px 0"><h3>${p.ProductName}</h3><p>${p.Category}</p><p>Vendor: ${p.Vendor}</p><p>Postal Code: ${p.PostalCode}</p><a href="${p.Website}" target="_blank">Website</a></div>`).join("")||"No products found.";
+
+function loadProducts() {
+  const pc = document.getElementById("productPostal").value.trim();
+  const list = document.getElementById("productList");
+  list.innerHTML = "Loading...";
+  const f = pc ? pData.filter(x => x.PostalCode === pc) : pData;
+  list.innerHTML = f.map(p => `
+    <div style="border:1px solid #ccc; padding:10px; margin:10px 0; border-radius: 6px;">
+      <h3>${p.ProductName}</h3>
+      <p><strong>Category:</strong> ${p.Category}</p>
+      <p><strong>Vendor:</strong> ${p.Vendor}</p>
+      <p><strong>Postal Code:</strong> ${p.PostalCode}</p>
+      <a href="${p.Website}" target="_blank" rel="noopener noreferrer">Website</a>
+    </div>
+  `).join("") || "No products found.";
 }
-document.addEventListener("DOMContentLoaded",async()=>{
+
+document.addEventListener("DOMContentLoaded", async () => {
   await loadProductData();
   setupProductAutocomplete();
 });
