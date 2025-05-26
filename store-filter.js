@@ -178,20 +178,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ==================== Modal Popup ==================
 
-  document.addEventListener("DOMContentLoaded", () => {
-  // Show modal after 5 seconds
-  setTimeout(() => {
-    const modal = document.getElementById("welcomeModal");
-    // Check if user already saw modal (optional)
-    if (!localStorage.getItem("modalShown")) {
-      modal.style.display = "flex";
-      localStorage.setItem("modalShown", "true"); // So it only shows once per browser
-    }
-  }, 5000);
+ document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("welcomeModal");
+  const closeBtn = modal.querySelector(".close-btn");
 
-  // Close modal logic
-  document.getElementById("closeModal").addEventListener("click", () => {
-    document.getElementById("welcomeModal").style.display = "none";
+  // Check if modal was already shown
+  if (!localStorage.getItem("modalShown")) {
+    setTimeout(() => {
+      modal.style.display = "flex";
+    }, 5000); // 5 seconds delay
+  }
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    localStorage.setItem("modalShown", "true"); // Remember that modal was shown
+  });
+
+  // Optional: close modal if user clicks outside the content box
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      localStorage.setItem("modalShown", "true");
+    }
   });
 });
 
