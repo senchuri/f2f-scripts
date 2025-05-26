@@ -324,10 +324,10 @@ list.innerHTML = filtered.length ? `
          <div style="border: 1px solid #e2e8f0; padding: 4px; border-radius:12px">
            <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 180px; object-fit: cover; border-radius:8px" />
            <div style="padding:8px">
-             <h5 style={font-size:14px; font-wight: medium}>${p.ProductName}</h5>
-             <p style={font-size:12px}>${p.Category}</p>
-             <p style={font-size:12px}>Vendor: ${p.Vendor}</p>
-             <p style={font-size:12px}>Postal Code: ${p.PostalCode}</p>
+             <h5 style="font-size:14px; font-wight: medium">${p.ProductName}</h5>
+             <p style="font-size:12px">${p.Category}</p>
+             <p style="font-size:12px">Vendor: ${p.Vendor}</p>
+             <p style="font-size:12px">Postal Code: ${p.PostalCode}</p>
            </div>
          </div>
         </a>
