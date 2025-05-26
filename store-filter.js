@@ -316,8 +316,7 @@ list.innerHTML = filtered.length ? `
   <div style="
     display: grid; 
     grid-template-columns: repeat(4, 1fr); 
-    gap: 20px;
-  ">
+    gap: 20px">
     ${filtered.map(p => `
       <div>
         <a href="${p.Website}" target="_blank">
