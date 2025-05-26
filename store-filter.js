@@ -1,3 +1,17 @@
+if (!window.Tabletop) {
+  var script = document.createElement('script');
+  script.src = "https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js";
+  script.onload = () => {
+    // call your main init function here after Tabletop loads
+    init();
+  };
+  document.head.appendChild(script);
+} else {
+  init();
+}
+
+
+
 // farmstofeast store filter script
 const sheetID = "1b-ErR6Ij_tr83CvmhvSRGcst8EwfN0pbMDdcyMSiVgg";
 let allStores = [];
