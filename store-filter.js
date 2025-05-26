@@ -319,20 +319,22 @@ list.innerHTML = filtered.length ? `
     gap: 20px;
   ">
     ${filtered.map(p => `
-      <a href="${p.Website}" target="_blank">
-       <div style="border: 1px solid #e2e8f0; padding: 4px; border-radius:12px">
-         <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 180px; object-fit: cover; border-radius:8px" />
-         <div style="padding:8px">
-           <h3>${p.ProductName}</h3>
-           <p>${p.Category}</p>
-           <p>Vendor: ${p.Vendor}</p>
-           <p>Postal Code: ${p.PostalCode}</p>
+      <>
+        <a href="${p.Website}" target="_blank">
+         <div style="border: 1px solid #e2e8f0; padding: 4px; border-radius:12px">
+           <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 180px; object-fit: cover; border-radius:8px" />
+           <div style="padding:8px">
+             <h3>${p.ProductName}</h3>
+             <p>${p.Category}</p>
+             <p>Vendor: ${p.Vendor}</p>
+             <p>Postal Code: ${p.PostalCode}</p>
+           </div>
          </div>
-       </div>
-      </a>
+        </a>
+      </>
     `).join("")}
   </div>
-` : "No products found.";
+` : "Sorry, but it looks like we aren't selling in your area.";
 
 }
 
