@@ -1,60 +1,4 @@
-// async function loadVendors() {
-//   const pc = document.getElementById("postalCode").value.trim();
-//   const list = document.getElementById("vendorList");
-//   list.innerHTML = "Loading...";
-//   try {
-//     const res = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=vendors");
-//     const data = await res.json();
-//     const filtered = pc ? data.filter(v => v.PostalCode == pc) : data;
-//     list.innerHTML = filtered.map(v =>
-//       `<div style="border:1px solid #ccc;padding:10px;margin-bottom:10px;">
-//         <h3>${v.VendorName}</h3>
-//         <p>${v.Location}</p>
-//         <p>Postal Code: ${v.PostalCode}</p>
-//         <a href="${v.Website}" target="_blank">Website</a>
-//       </div>`).join("") || "No vendors found.";
-//   } catch (e) {
-//     console.error(e);
-//     list.innerHTML = "Error loading vendors.";
-//   }
-// }
-
-
-
- // for Vendors 
-
-// let vData=[],pcList=[];
-// async function loadData(){
-//   const r=await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=vendors");
-//   vData=await r.json();
-//   pcList=[...new Set(vData.map(x=>x.PostalCode))];
-// }
-// function setupAutocomplete(){
-//   const inp=document.getElementById("postalCode"),list=document.getElementById("autocomplete");
-//   inp.addEventListener("input",()=>{
-//     const val=inp.value.trim().toLowerCase();
-//     list.innerHTML=val?pcList.filter(p=>p.toLowerCase().startsWith(val)).map(p=>`<div class="auto-item">${p}</div>`).join(""):"";
-//   });
-//   list.addEventListener("click",e=>{
-//     if(e.target.classList.contains("auto-item")){
-//       inp.value=e.target.textContent;
-//       list.innerHTML="";
-//       loadVendors();
-//     }
-//   });
-// }
-// function loadVendors(){
-//   const pc=document.getElementById("postalCode").value.trim(),list=document.getElementById("vendorList");
-//   list.innerHTML="Loading...";
-//   const f=pc?vData.filter(x=>x.PostalCode==pc):vData;
-//   list.innerHTML=f.map(v=>`<div style="border:1px solid#ccc;padding:10px;margin:10px 0"><h3>${v.VendorName}</h3><p>${v.Location}</p><p>Postal Code: ${v.PostalCode}</p><a href="${v.Website}" target="_blank">Website</a></div>`).join("")||"No vendors found.";
-// }
-// document.addEventListener("DOMContentLoaded",async()=>{
-//   await loadData();
-//   setupAutocomplete();
-// });
-
-// ---  hello
+// For vendors
 
 let vData = [], pcList = [];
 
@@ -111,18 +55,25 @@ function loadVendors(){
 
   list.innerHTML = filtered.length ? `
     <div style="
-      display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
-      gap: 20px;">
-      ${filtered.map(v => `
-        <div style="border:1px solid #e2e8f0; padding:10px; border-radius:12px;">
-          <h4 style="margin: 0 0 8px 0;">${v.VendorName}</h4>
-          <p style="margin: 0 0 4px 0; font-size:14px;">Location: ${v.Location}</p>
-          <p style="margin: 0 0 4px 0; font-size:14px;">Postal Code: ${v.PostalCode}</p>
-          <a href="${v.Website}" target="_blank" style="color:#007BFF; font-weight:bold;">Visit Website</a>
-        </div>
-      `).join('')}
-    </div>
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px">
+    ${filtered.map(p => `
+      <div>
+        <a href="${p.StoreURL}" target="_blank">
+         <div style="border: 1px solid #e2e8f0; padding: 4px; border-radius:12px">
+           <img src="${p.ImageURL}" alt="${p.VendorName}" style="width: 100%; height: 180px; object-fit: cover; border-radius:8px" />
+           <div style="padding:8px">
+             <h5 style="font-size:14px; font-wight: medium">${p.VendorName}</h5>
+             <p style="font-size:12px">${p.Location}</p>
+             <p style="font-size:12px">Total Products: ${p.TotalProducts}</p>
+             <p style="font-size:12px">Postal Code: ${p.PostalCode}</p>
+           </div>
+         </div>
+        </a>
+      </div>
+    `).join("")}
+  </div>
   ` : "Sorry, no vendors found in this area.";
 }
 
@@ -130,120 +81,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadVendorData();
   setupVendorAutocomplete();
 });
-
-
-// let vData = [], pcList = [];
-
-// async function loadData(){
-//   const r = await fetch("https://script.google.com/macros/s/AKfycbyqyG_4j5u9e2fWnhUiosvOarp3cRhpmG_yCjfPjdoay0Wh3ZeWK0BIHpqme2Q_6IJd2A/exec?type=vendors");
-//   vData = await r.json();
-
-//   pcList = [...new Set(vData.map(x => x.PostalCode).filter(p => p && p.trim() !== ""))];
-// }
-
-// function setupAutocomplete(){
-//   const inp = document.getElementById("postalCode");
-//   const list = document.getElementById("autocompletePostal");
-
-//   inp.addEventListener("input", () => {
-//     const val = inp.value.trim().toLowerCase();
-//     if(!val){
-//       list.innerHTML = "";
-//       return;
-//     }
-//     const filtered = pcList.filter(item => item.toLowerCase().startsWith(val));
-//     list.innerHTML = filtered.map(item => 
-//       `<div class="auto-item" style="padding:5px;cursor:pointer;border-bottom:1px solid #ccc;">${item}</div>`
-//     ).join("");
-//   });
-
-//   list.addEventListener("click", e => {
-//     if(e.target.classList.contains("auto-item")){
-//       inp.value = e.target.textContent;
-//       list.innerHTML = "";
-//       loadVendors();
-//     }
-//   });
-
-//   document.addEventListener("click", e => {
-//     if(!inp.contains(e.target) && !list.contains(e.target)){
-//       list.innerHTML = "";
-//     }
-//   });
-// }
-
-// function loadVendors(){
-//   const pc = document.getElementById("postalCode").value.trim().toLowerCase();
-//   const list = document.getElementById("vendorList");
-
-//   if(!pc){
-//     list.innerHTML = "Please enter a Postal Code to search.";
-//     return;
-//   }
-
-//   list.innerHTML = "Loading...";
-
-//   const filtered = vData.filter(v => v.PostalCode.toLowerCase().includes(pc));
-
-//   if(filtered.length === 0){
-//     list.innerHTML = "No vendors found.";
-//     return;
-//   }
-
-//   list.innerHTML = filtered.map(v => `
-//     <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-//       <h3>${v.VendorName}</h3>
-//       <p><strong>Location:</strong> ${v.Location}</p>
-//       <p><strong>Postal Code:</strong> ${v.PostalCode}</p>
-//       <a href="${v.Website}" target="_blank" rel="noopener">Website</a>
-//     </div>`).join("");
-// }
-
-// document.addEventListener("DOMContentLoaded", async () => {
-//   await loadData();
-//   setupAutocomplete();
-//   document.getElementById("searchBtn").addEventListener("click", loadVendors);
-// });
-
-// function loadVendors(){
-//   const pc = document.getElementById("postalCode").value.trim().toLowerCase();
-//   const loc = document.getElementById("location").value.trim().toLowerCase();
-//   const list = document.getElementById("vendorList");
-
-//   if(!pc && !loc){
-//     list.innerHTML = "Please enter Postal Code or Location to search.";
-//     return;
-//   }
-
-//   list.innerHTML = "Loading...";
-
-//   const filtered = vData.filter(v => {
-//     const pcMatch = pc ? v.PostalCode.toLowerCase().includes(pc) : false;
-//     const locMatch = loc ? v.Location.toLowerCase().includes(loc) : false;
-//     return pcMatch || locMatch;
-//   });
-
-//   if(filtered.length === 0){
-//     list.innerHTML = "No vendors found.";
-//     return;
-//   }
-
-//   list.innerHTML = filtered.map(v => `
-//     <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
-//       <h3>${v.VendorName}</h3>
-//       <p><strong>Location:</strong> ${v.Location}</p>
-//       <p><strong>Postal Code:</strong> ${v.PostalCode}</p>
-//       <a href="${v.Website}" target="_blank" rel="noopener">Website</a>
-//     </div>`).join("");
-// }
-
-// document.addEventListener("DOMContentLoaded", async () => {
-//   await loadData();
-//   setupAutocomplete("postalCode", "autocompletePostal", pcList);
-//   setupAutocomplete("location", "autocompleteLocation", locList);
-
-//   document.getElementById("searchBtn").addEventListener("click", loadVendors);
-// });
 
 
 // -------------------------------------------------- 
