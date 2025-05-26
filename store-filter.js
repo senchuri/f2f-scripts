@@ -425,9 +425,12 @@ function loadProducts(){
   //       <a href="${p.Website}" target="_blank">Website</a>
   //     </div>
   //   `).join("") : "No products found.";
-
- list.innerHTML = filtered.length ? `
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+list.innerHTML = filtered.length ? `
+  <div style="
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+  ">
     ${filtered.map(p => `
       <div style="border: 1px solid #ccc; padding: 10px;">
         <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 250px; object-fit: cover;" />
