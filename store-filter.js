@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-==================== Modal Popup ==================
+// ==================== Modal Popup ==================
 
   document.addEventListener("DOMContentLoaded", () => {
   // Show modal after 5 seconds
