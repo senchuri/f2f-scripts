@@ -176,4 +176,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
+==================== Modal Popup ==================
+
+  document.addEventListener("DOMContentLoaded", () => {
+  // Show modal after 5 seconds
+  setTimeout(() => {
+    const modal = document.getElementById("welcomeModal");
+    // Check if user already saw modal (optional)
+    if (!localStorage.getItem("modalShown")) {
+      modal.style.display = "flex";
+      localStorage.setItem("modalShown", "true"); // So it only shows once per browser
+    }
+  }, 5000);
+
+  // Close modal logic
+  document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("welcomeModal").style.display = "none";
+  });
+});
+
+
+
 
