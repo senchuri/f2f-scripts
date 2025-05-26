@@ -319,7 +319,7 @@ list.innerHTML = filtered.length ? `
     gap: 20px;
   ">
     ${filtered.map(p => `
-      <>
+      <div>
         <a href="${p.Website}" target="_blank">
          <div style="border: 1px solid #e2e8f0; padding: 4px; border-radius:12px">
            <img src="${p.ImageURL}" alt="${p.ProductName}" style="width: 100%; height: 180px; object-fit: cover; border-radius:8px" />
@@ -331,7 +331,7 @@ list.innerHTML = filtered.length ? `
            </div>
          </div>
         </a>
-      </>
+      </div>
     `).join("")}
   </div>
 ` : "Sorry, but it looks like we aren't selling in your area.";
