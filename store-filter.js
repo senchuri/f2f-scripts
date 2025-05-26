@@ -1,4 +1,3 @@
-<script>
 async function loadVendors() {
   const pc = document.getElementById("postalCode").value.trim();
   const list = document.getElementById("vendorList");
@@ -19,4 +18,3 @@ async function loadVendors() {
     list.innerHTML = "Error loading vendors.";
   }
 }
-</script>
